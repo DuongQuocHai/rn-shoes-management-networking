@@ -9,6 +9,7 @@ import DetailsScreen from '../screens/DetailsScreen'
 import ProfileScreen from '../screens/ProfileScreen'
 import SearchScreen from '../screens/SearchScreen'
 
+
 const HomeStack = createStackNavigator();
 const DetailsStack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();

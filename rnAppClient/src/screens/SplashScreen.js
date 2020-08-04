@@ -1,42 +1,52 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ImageBackground, Image } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
-export default class SplashScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={styles.warpperLogo} >
-                    <Image source={require('../assets/images/logo.png')} style={styles.logo}></Image>
-                    <Text style={styles.sologan}> Be healthier everyday </Text>
-                </View>
+
+const SplashScreen = ({ navigation }) => {
+    useEffect(() => {
+        setTimeout(() => {
+            navigation.replace('SignInScreen');
+        }, 3000)
+    });
+    return (
+        <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
+            <View
+                style={styles.warpperLogo} >
+                <Animatable.Image
+                    animation="fadeInUp"
+                    duraton="1500"
+                    source={require('../assets/images/logo.png')}
+                    style={styles.logo}
+                    resizeMode="stretch" />
+                <Animatable.Text animation="fadeIn"
+                    duraton="1500" style={styles.sologan}> Be healthier everyday </Animatable.Text>
             </View>
-        );
-    }
+        </ImageBackground>
+    )
 }
+export default SplashScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     warpperLogo: {
         alignItems: 'center',
         position: 'relative'
     },
     logo: {
-        width: 200,
-        height: 200,
+        width: 100,
+        height: 100,
         position: 'absolute',
-        top: -250
+        top: -150
     },
     sologan: {
-        color: '#2c3e50',
+        color: 'white',
         fontSize: 15,
     }
 });
+
+

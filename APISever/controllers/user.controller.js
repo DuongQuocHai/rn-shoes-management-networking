@@ -27,7 +27,6 @@ module.exports.Login = async (req, res) => {
     try {
         console.log(req.body)
         const user = await User.findOne({ phone: req.body.phone });
-        console.log(user)
         if (user) {
             if (user.password === req.body.password) {
                 const resData = {
