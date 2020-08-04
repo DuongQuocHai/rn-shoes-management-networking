@@ -13,6 +13,7 @@ import java.util.List;
 //////////
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 /////////
 public class MainApplication extends Application implements ReactApplication {
 

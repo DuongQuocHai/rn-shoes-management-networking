@@ -4,10 +4,7 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
-  Platform,
-  StyleSheet,
   StatusBar,
-  Alert,
   ImageBackground
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
@@ -16,12 +13,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 import styles from '../themes/SignInSignUp/styles'
-import { signIn } from '../sever/users/sever'
-
-
-
-
-
+import { AuthContext } from '../components/AuthContext'
+// import { signIn } from '../sever/users/sever'
 
 const SignInScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
@@ -30,6 +23,8 @@ const SignInScreen = ({ navigation }) => {
     check_textInputChange: false,
     secureTextEntry: true,
   });
+
+  const { signIn } = React.useContext(AuthContext)
 
   const textInputChanged = (val) => {
     if (val.length !== 0) {
@@ -46,6 +41,21 @@ const SignInScreen = ({ navigation }) => {
       })
     }
   }
+  const handlePasswordChange = (val) => {
+    if( val.trim().length >= 8 ) {
+        setData({
+            ...data,
+            password: val,
+            isValidPassword: true
+        });
+    } else {
+        setData({
+            ...data,
+            password: val,
+            isValidPassword: false
+        });
+    }
+}
 
   const updateSecureTextEntry = () => {
     setData({
@@ -54,19 +64,20 @@ const SignInScreen = ({ navigation }) => {
     })
   }
 
+  const loginHandle = (phone, password) => {
+    signIn(phone, password);
+  }
+
+
   return (
     <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
       <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
-      <Animatable.View
-        animation="fadeIn"
-        style={styles.header}>
+      <Animatable.View animation="fadeIn" style={styles.header}>
         <Text style={styles.text_header}>
           Login
         </Text>
       </Animatable.View>
-      <Animatable.View
-        animation="slideInUp"
-        style={styles.footer}>
+      <Animatable.View animation="slideInUp" style={styles.footer}>
         <Text style={styles.text_footer}>Phone</Text>
         <View style={styles.action}>
           <Feather
@@ -84,17 +95,17 @@ const SignInScreen = ({ navigation }) => {
             onChangeText={(val) => textInputChanged(val)}
             style={styles.textInput}
           />
-          {data.check_textInputChange ?
-            <Animatable.View
-              animation='bounceIn'
-            >
-              <Feather
-                name="check-circle"
-                color="green"
-                size={20}
-              />
-            </Animatable.View>
-            : null}
+          {
+            data.check_textInputChange ?
+              <Animatable.View animation='bounceIn' >
+                <Feather
+                  name="check-circle"
+                  color="green"
+                  size={20}
+                />
+              </Animatable.View>
+              : null
+          }
         </View>
         <Text style={[styles.text_footer, { marginTop: 35 }]}>Password</Text>
         <View style={styles.action}>
@@ -109,6 +120,7 @@ const SignInScreen = ({ navigation }) => {
             autoCapitalize="none"
             secureTextEntry={data.secureTextEntry ? true : false}
             maxLength={6}
+            onChangeText={(val) => handlePasswordChange(val)}
             keyboardType='numeric'
             style={styles.textInput}
           />
@@ -128,24 +140,17 @@ const SignInScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <LinearGradient
-            colors={['#13C684', '#00C27F']}
-            style={styles.signIn}
-            onPress={() => signIn()}
-          >
-            <Text style={[styles.textSign, { color: '#fff' }]}>
-              Sign In
-            </Text>
-          </LinearGradient>
-          <TouchableOpacity
-            onPress={() => signIn()}
-            // onPress={() => navigation.navigate('SignUpScreen')}
-            style={[styles.signIn, {
-              borderColor: '#00C27F',
-              borderWidth: 1,
-              marginTop: 15
-            }]}
-          >
+          <TouchableOpacity style={styles.signIn}
+            onPress={() => { loginHandle(data.phone, data.password) }} >
+            <LinearGradient colors={['#13C684', '#00C27F']} style={styles.signIn} >
+              <Text style={[styles.textSign, { color: '#fff' }]}>
+                Sign In
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')} style={[styles.signIn, {
+            borderColor: '#00C27F', borderWidth: 1, marginTop: 15
+          }]} >
             <Text style={[styles.textSign, { color: '#00C27F' }]}>Sign Up</Text>
           </TouchableOpacity>
         </View>
