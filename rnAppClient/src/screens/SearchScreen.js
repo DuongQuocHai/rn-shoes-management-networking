@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Text, Button, TouchableOpacity } from 'react-native';
-// import Ionicons from 'react-native-vector-icons/Ionicons'
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 
-const HomeScreen = ({ navigation }) => {
+const SearchScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>HomeScreen</Text>

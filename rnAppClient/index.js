@@ -9,6 +9,7 @@ import SplashScreen from './src/screens/SplashScreen'
 import App from './src/App'
 import React, { Component } from 'react';
 
+
 import {name as appName} from './app.json';
 class Main extends Component {
     constructor(props) {
@@ -25,4 +26,4 @@ class Main extends Component {
     }
 }
 
-AppRegistry.registerComponent(appName, () => Main);
+AppRegistry.registerComponent(appName, () => App);
