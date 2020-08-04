@@ -4,13 +4,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 
-const SearchScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Sreach Screen</Text>
+      <Text>Profile Screen</Text>
     </View>
   )
 }
-export default SearchScreen;
+export default ProfileScreen;
 
 
