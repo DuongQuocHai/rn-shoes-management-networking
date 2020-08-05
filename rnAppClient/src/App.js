@@ -58,19 +58,15 @@ const App = () => {
     const [loginState, dispatch] = React.useReducer(loginReducer, initialLoginState);
 
     const authContext = React.useMemo(() => ({
-        signIn: async (foundUser) => {
-            // setUserToken('fgaks');
-            // setIsLoading(false);
-            const userToken = String(foundUser._id);
-            const stringDataUser = JSON.stringify(foundUser);
-            console.log('dataUser---------', stringDataUser);
-            // console.log(foundUser)
+        signIn: async (User) => {
+            const userToken = String(User._id);
+            const stringDataUser = JSON.stringify(User);
             try {
                 await AsyncStorage.setItem('dataUser', stringDataUser)
             } catch (e) {
                 console.log(e);
             }
-            dispatch({ type: 'LOGIN', data: foundUser, token: userToken })
+            dispatch({ type: 'LOGIN', data: User, token: userToken })
         },
         signOut: async () => {
             // setUserToken(null);
@@ -82,9 +78,15 @@ const App = () => {
             }
             dispatch({ type: 'LOGOUT' })
         },
-        signUp: () => {
-            // setUserToken('fgaks');
-            // setIsLoading(false);
+        signUp: async (User) => {
+            const userToken = String(User._id);
+            const stringDataUser = JSON.stringify(User);
+            try {
+                await AsyncStorage.setItem('dataUser', stringDataUser)
+            } catch (e) {
+                console.log(e);
+            }
+            dispatch({ type: 'REGISTER', data: User, token: userToken })
         }
     }));
 

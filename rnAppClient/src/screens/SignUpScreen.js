@@ -8,7 +8,8 @@ import {
   StatusBar,
   Alert,
   ImageBackground,
-  TextInput
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,43 +17,167 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 import styles from '../themes/SignInSignUp/styles'
+import { AuthContext } from '../components/AuthContext'
+import { checkPhoneExist, signUpDb } from '../sever/users/sever'
+
 
 const SignUpScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
+    name: '',
     phone: '',
     password: '',
+    confirmPass: '',
     secureTextEntryPass: true,
     secureTextEntryConfirmPass: true,
-    check_txtNameChange: false,
-    check_txtPhoneChange: false,
+    check_txtNameChanged: false,
+    check_txtPhoneChanged: false,
+    isValidName: true,
     isValidPhone: true,
     isValidPassword: true,
   });
 
-  const textInputChanged = (val) => {
+
+
+  const textInputNameChanged = (val) => {
     if (val.length !== 0) {
       setData({
         ...data,
+        name: val,
+        check_txtNameChanged: true,
+        isValidName: true
+      })
+    } else {
+      setData({
+        ...data,
+        name: val,
+        check_txtNameChanged: false,
+      })
+    }
+  }
+
+  const textInputPhoneChanged = (val) => {
+    if (val.length === 10) {
+      setData({
+        ...data,
         phone: val,
-        check_textInputChange: true,
+        check_txtPhoneChanged: true,
+        isValidPhone: true
       })
     } else {
       setData({
         ...data,
         phone: val,
-        check_textInputChange: false,
+        check_txtPhoneChanged: false,
+      })
+    }
+  }
+  const textInputPassChanged = (val) => {
+    setData({
+      ...data,
+      password: val,
+    })
+    if (val === 6) {
+      setData({
+        ...data,
+        password: val,
+        isValidPassword: true,
       })
     }
   }
 
-
-
-  const updateSecureTextEntry = () => {
+  const textInputConfirmPassChanged = (val) => {
     setData({
       ...data,
-      secureTextEntry: !data.secureTextEntry,
+      confirmPass: val,
     })
   }
+
+  const updateSecureTextEntryPass = () => {
+    setData({
+      ...data,
+      secureTextEntryPass: !data.secureTextEntryPass,
+    })
+  }
+
+  const updateSecureTextEntryConfirmPass = () => {
+    setData({
+      ...data,
+      secureTextEntryConfirmPass: !data.secureTextEntryConfirmPass,
+    })
+  }
+
+  const checkValidName = () => {
+    console.log(data.name.trim());
+    if (data.name.trim() !== '') {
+      setData({
+        ...data,
+        isValidName: true
+      })
+      return true
+    } else {
+      setData({
+        ...data,
+        isValidName: false
+      })
+      return false
+    }
+  }
+
+  const checkValidPhone = () => {
+    if (data.phone.trim().length === 10) {
+      setData({
+        ...data,
+        isValidPhone: true
+      })
+      return true
+    } else if (data.phone.trim().length < 10) {
+      setData({
+        ...data,
+        isValidPhone: false
+      })
+      return false
+    }
+  }
+  const checkValidPass = () => {
+    if (data.password.trim().length === 6) {
+      setData({
+        ...data,
+        isValidPassword: true
+      })
+      return true
+    } else if (data.password.trim().length < 6) {
+      setData({
+        ...data,
+        isValidPassword: false
+      })
+      return false
+    }
+  }
+
+  const checkConfirmPass = () => {
+    if (data.password.trim() === data.confirmPass.trim()) {
+      return true
+    } else {
+      alert('Password does not match')
+      return false
+    }
+  }
+  const { signUp } = React.useContext(AuthContext)
+  const handleResgister = async (user) => {
+    if (checkValidName() && checkValidPhone() && checkValidPass() && checkConfirmPass()) {
+      const resultPhoneExist = await checkPhoneExist(user.phone)
+      if (resultPhoneExist.status === 200) {
+        const resultSignUp = await signUpDb(user);
+        console.log(resultSignUp);
+        if (resultSignUp.status === 200) {
+          signUp(resultSignUp)
+        }else alert('Đăng ký thất bại')
+      } else {
+        alert(resultPhoneExist.message)
+      }
+    }
+  }
+
   return (
     <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
       <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
@@ -61,6 +186,7 @@ const SignUpScreen = ({ navigation }) => {
           Register
         </Text>
       </Animatable.View>
+
       <Animatable.View animation="slideInUp" style={styles.footer}>
         <Text style={styles.text_footer}>Full Name</Text>
         <View style={styles.action}>
@@ -74,12 +200,11 @@ const SignUpScreen = ({ navigation }) => {
             placeholderTextColor="#666666"
             autoCapitalize="none"
             maxLength={10}
-            keyboardType='numeric'
             returnKeyType='next'
-            onChangeText={(val) => textInputChanged(val)}
+            onChangeText={(val) => textInputNameChanged(val)}
             style={styles.textInput}
           />
-          {data.check_textInputChange ?
+          {data.check_txtNameChanged ?
             <Animatable.View
               animation='bounceIn'
             >
@@ -91,7 +216,12 @@ const SignUpScreen = ({ navigation }) => {
             </Animatable.View>
             : null}
         </View>
-
+        {
+          data.isValidName ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Name can't be empty</Text>
+            </Animatable.View>
+        }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Phone</Text>
         <View style={styles.action}>
           <Feather
@@ -106,10 +236,10 @@ const SignUpScreen = ({ navigation }) => {
             maxLength={10}
             keyboardType='numeric'
             returnKeyType='next'
-            onChangeText={(val) => textInputChanged(val)}
+            onChangeText={(val) => textInputPhoneChanged(val)}
             style={styles.textInput}
           />
-          {data.check_textInputChange ?
+          {data.check_txtPhoneChanged ?
             <Animatable.View
               animation='bounceIn'
             >
@@ -124,7 +254,7 @@ const SignUpScreen = ({ navigation }) => {
         {
           data.isValidPhone ? null :
             <Animatable.View animation="fadeInLeft" >
-              <Text style={styles.errorMsg}>Password must be 10 characters long</Text>
+              <Text style={styles.errorMsg}>Phone must be 6 characters long</Text>
             </Animatable.View>
         }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Password</Text>
@@ -138,13 +268,14 @@ const SignUpScreen = ({ navigation }) => {
             placeholder="Your Password"
             placeholderTextColor="#666666"
             autoCapitalize="none"
-            secureTextEntry={data.secureTextEntry ? true : false}
+            secureTextEntry={data.secureTextEntryPass ? true : false}
             maxLength={6}
             keyboardType='numeric'
+            onChangeText={(val) => textInputPassChanged(val)}
             style={styles.textInput}
           />
-          <TouchableOpacity onPress={() => updateSecureTextEntry()}>
-            {data.secureTextEntry ?
+          <TouchableOpacity onPress={() => updateSecureTextEntryPass()}>
+            {data.secureTextEntryPass ?
               <Feather
                 name="eye-off"
                 color="grey"
@@ -175,13 +306,14 @@ const SignUpScreen = ({ navigation }) => {
             placeholder="Confirm Your Password"
             placeholderTextColor="#666666"
             autoCapitalize="none"
-            secureTextEntry={data.secureTextEntry ? true : false}
+            secureTextEntry={data.secureTextEntryConfirmPass ? true : false}
             maxLength={6}
             keyboardType='numeric'
+            onChangeText={(val) => textInputConfirmPassChanged(val)}
             style={styles.textInput}
           />
-          <TouchableOpacity onPress={() => updateSecureTextEntry()}>
-            {data.secureTextEntry ?
+          <TouchableOpacity onPress={() => updateSecureTextEntryConfirmPass()}>
+            {data.secureTextEntryConfirmPass ?
               <Feather
                 name="eye-off"
                 color="grey"
@@ -196,14 +328,19 @@ const SignUpScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <LinearGradient
-            colors={['#13C684', '#00C27F']}
-            style={styles.signIn}
-          >
-            <Text style={[styles.textSign, { color: '#fff' }]}>
-              Sign Up
+          <TouchableOpacity
+            onPress={() => handleResgister(data)}
+            style={styles.signIn}>
+
+            <LinearGradient
+              colors={['#13C684', '#00C27F']}
+              style={styles.signIn}
+            >
+              <Text style={[styles.textSign, { color: '#fff' }]}>
+                Sign Up
             </Text>
-          </LinearGradient>
+            </LinearGradient>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.replace('SignInScreen')}
             style={[styles.signIn, {

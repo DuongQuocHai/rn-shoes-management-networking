@@ -102,7 +102,7 @@ const SignInScreen = ({ navigation }) => {
     }
   }
 
-  const loginHandle = async (phone, password) => {
+  const handleLogin = async (phone, password) => {
     if (checkValidPhone(phone) && checkValidPass(password)) {
       setAnimating(true)
       console.log('haha')
@@ -209,8 +209,8 @@ const SignInScreen = ({ navigation }) => {
         </TouchableOpacity>
         <View style={styles.button}>
           <TouchableOpacity disabled={false} style={styles.signIn}
-            // onPress={() => { loginHandle(data.phone, data.password) }} 
-            onPress={() => loginHandle(data.phone, data.password)}
+            // onPress={() => { handleLogin(data.phone, data.password) }} 
+            onPress={() => handleLogin(data.phone, data.password)}
           >
             <LinearGradient colors={['#13C684', '#00C27F']} style={styles.signIn} >
               <Text style={[styles.textSign, { color: '#fff' }]}>
