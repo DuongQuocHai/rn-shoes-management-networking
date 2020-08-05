@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   StatusBar,
-  ImageBackground
+  ImageBackground,
+  Alert
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,7 +15,9 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import styles from '../themes/SignInSignUp/styles'
 import { AuthContext } from '../components/AuthContext'
-// import { signIn } from '../sever/users/sever'
+import Users from '../model/users';
+
+import { signInDb } from '../sever/users/sever'
 
 const SignInScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
@@ -22,16 +25,25 @@ const SignInScreen = ({ navigation }) => {
     password: '',
     check_textInputChange: false,
     secureTextEntry: true,
+    isValidPhone: true,
+    isValidPassword: true
   });
 
   const { signIn } = React.useContext(AuthContext)
+  const updateSecureTextEntry = () => {
+    setData({
+      ...data,
+      secureTextEntry: !data.secureTextEntry,
+    })
+  }
 
-  const textInputChanged = (val) => {
-    if (val.length !== 0) {
+  const changeTxtPhone = (val) => {
+    if (val.trim().length === 10) {
       setData({
         ...data,
         phone: val,
         check_textInputChange: true,
+        isValidPassword: true
       })
     } else {
       setData({
@@ -41,31 +53,96 @@ const SignInScreen = ({ navigation }) => {
       })
     }
   }
-  const handlePasswordChange = (val) => {
-    if( val.trim().length >= 8 ) {
-        setData({
-            ...data,
-            password: val,
-            isValidPassword: true
-        });
-    } else {
-        setData({
-            ...data,
-            password: val,
-            isValidPassword: false
-        });
-    }
-}
-
-  const updateSecureTextEntry = () => {
+  const changeTxtPass = (val) => {
     setData({
       ...data,
-      secureTextEntry: !data.secureTextEntry,
-    })
+      password: val,
+    });
+    if (val === 6) {
+      setData({
+        ...data,
+        phone: val,
+        isValidPassword: false
+      })
+    }
   }
 
-  const loginHandle = (phone, password) => {
-    signIn(phone, password);
+  const checkValidForm = (phone, password) => {
+    console.log(phone)
+    console.log(password)
+    if (phone.trim().length === 10) {
+      setData({
+        ...data,
+        isValidPhone: false
+      })
+      return true
+    } else if(phone.trim().length < 10){
+      setData({
+        ...data,
+        isValidPhone: true
+      })
+      return false
+    }else if(password.trim().length === 6){
+      setData({
+        ...data,
+        isValidPassword: false
+      })
+      return true
+    }else if(password.trim().length < 4){
+      setData({
+        ...data,
+        isValidPassword: true
+      })
+      return false
+    }
+    
+  }
+
+  const loginHandle = async (phone, password) => {
+    const user = await signInDb(phone, password);
+    if (data.phone.length == 0 || data.password.length == 0) {
+      Alert.alert('Wrong Input!', 'Username or password field cannot be empty.', [
+        { text: 'Okay' }
+      ]);
+      return;
+    }
+    if (val.trim().length === 10) {
+      setData({
+        ...data,
+        phone: val,
+        check_textInputChange: true,
+        isValidPhone: true
+      })
+      return;
+    } else {
+      setData({
+        ...data,
+        phone: val,
+        check_textInputChange: false,
+        isValidPhone: false
+      })
+      return;
+    }
+    if (val.trim().length === 6) {
+      setData({
+        ...data,
+        password: val,
+        isValidPassword: true
+      });
+    } else {
+      setData({
+        ...data,
+        password: val,
+        isValidPassword: false
+      });
+    }
+    if (foundUser.length == 0) {
+      Alert.alert('Invalid User!', 'Username or password is incorrect.', [
+        { text: 'Okay' }
+      ]);
+      return;
+    }
+    signIn(user);
   }
 
 
@@ -92,7 +169,8 @@ const SignInScreen = ({ navigation }) => {
             maxLength={10}
             keyboardType='numeric'
             returnKeyType='next'
-            onChangeText={(val) => textInputChanged(val)}
+            // onEndEditing={(val) => handleValidPhone(val.nativeEvent.text)}
+            onChangeText={(val) => changeTxtPhone(val)}
             style={styles.textInput}
           />
           {
@@ -107,6 +185,11 @@ const SignInScreen = ({ navigation }) => {
               : null
           }
         </View>
+        {data.isValidPhone ? null :
+          <Animatable.View animation="fadeInLeft" >
+            <Text style={styles.errorMsg}>Phone must be 10 characters long</Text>
+          </Animatable.View>
+        }
         <Text style={[styles.text_footer, { marginTop: 35 }]}>Password</Text>
         <View style={styles.action}>
           <Feather
@@ -120,7 +203,7 @@ const SignInScreen = ({ navigation }) => {
             autoCapitalize="none"
             secureTextEntry={data.secureTextEntry ? true : false}
             maxLength={6}
-            onChangeText={(val) => handlePasswordChange(val)}
+            onChangeText={(val) => changeTxtPass(val)}
             keyboardType='numeric'
             style={styles.textInput}
           />
@@ -139,9 +222,20 @@ const SignInScreen = ({ navigation }) => {
             }
           </TouchableOpacity>
         </View>
+        {
+          data.isValidPassword ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Password must be 6 characters long</Text>
+            </Animatable.View>
+        }
+        <TouchableOpacity>
+          <Text style={{ color: '#009387', marginTop: 15 }}>Forgot password?</Text>
+        </TouchableOpacity>
         <View style={styles.button}>
-          <TouchableOpacity style={styles.signIn}
-            onPress={() => { loginHandle(data.phone, data.password) }} >
+          <TouchableOpacity disabled={false} style={styles.signIn}
+            // onPress={() => { loginHandle(data.phone, data.password) }} 
+            onPress={() =>  checkValidForm(data.phone, data.password) } 
+            >
             <LinearGradient colors={['#13C684', '#00C27F']} style={styles.signIn} >
               <Text style={[styles.textSign, { color: '#fff' }]}>
                 Sign In

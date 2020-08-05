@@ -21,7 +21,7 @@ const App = () => {
     // const [userToken, setUserToken] = React.useState(null)
     const initialLoginState = {
         isLoading: true,
-        userName: null,
+        dataUser: null,
         userToken: null,
     };
     const loginReducer = (prevState, action) => {
@@ -35,21 +35,21 @@ const App = () => {
             case 'LOGIN':
                 return {
                     ...prevState,
-                    userName: action.id,
+                    dataUser: action.data,
                     userToken: action.token,
                     isLoading: false,
                 };
             case 'LOGOUT':
                 return {
                     ...prevState,
-                    userName: null,
+                    dataUser: null,
                     userToken: null,
                     isLoading: false,
                 };
             case 'REGISTER':
                 return {
                     ...prevState,
-                    userName: action.id,
+                    dataUser: action.data,
                     userToken: action.token,
                     isLoading: false,
                 };
@@ -58,34 +58,33 @@ const App = () => {
     const [loginState, dispatch] = React.useReducer(loginReducer, initialLoginState);
 
     const authContext = React.useMemo(() => ({
-        signIn: async (phone, password) => {
+        signIn: async (foundUser) => {
             // setUserToken('fgaks');
             // setIsLoading(false);
-            let userToken;
-            userToken = null;
-            if (phone === '0903585173' && password === '123456') {
-                userToken = 'hahaha';
-                try {
-                    await AsyncStorage.setItem('userToken', userToken)
-                } catch (e) {
-                    console.log(e);
-                }
+            const userToken = String(foundUser._id);
+            const stringDataUser = JSON.stringify(foundUser);
+            console.log('dataUser---------', stringDataUser);
+            // console.log(foundUser)
+            try {
+                await AsyncStorage.setItem('dataUser', stringDataUser)
+            } catch (e) {
+                console.log(e);
             }
-            dispatch({ type: 'LOGIN', id: phone, token: userToken })
+            dispatch({ type: 'LOGIN', data: foundUser, token: userToken })
         },
         signOut: async () => {
             // setUserToken(null);
             // setIsLoading(false);
             try {
-                await AsyncStorage.removeItem('userToken')
+                await AsyncStorage.removeItem('dataUser')
             } catch (e) {
                 console.log(e);
             }
             dispatch({ type: 'LOGOUT' })
         },
         signUp: () => {
-            setUserToken('fgaks');
-            setIsLoading(false);
+            // setUserToken('fgaks');
+            // setIsLoading(false);
         }
     }));
 
@@ -95,7 +94,12 @@ const App = () => {
             let userToken;
             userToken = null;
             try {
-                userToken = await AsyncStorage.getItem('userToken', userToken)
+                const stringDataUser = await AsyncStorage.getItem('dataUser');
+                const jsonDataUser = JSON.parse(stringDataUser)
+                console.log('++++++', jsonDataUser);
+                if (jsonDataUser !== null) {
+                    userToken = jsonDataUser._id
+                }
             } catch (e) {
                 console.log(e);
             }

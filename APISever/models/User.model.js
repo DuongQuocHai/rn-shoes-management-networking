@@ -13,6 +13,10 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    urlAvatar: {
+        type: String,
+        required: true
+    },
 
 })
 module.exports = mongoose.model('users', UserSchema)

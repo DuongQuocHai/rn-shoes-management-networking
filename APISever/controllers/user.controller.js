@@ -1,4 +1,5 @@
 const User = require('../models/User.model');
+const md5 = require('md5')
 
 module.exports.CheckValidPhone = async (req, res) => {
     try {
@@ -27,11 +28,14 @@ module.exports.Login = async (req, res) => {
     try {
         console.log(req.body)
         const user = await User.findOne({ phone: req.body.phone });
+        console.log(user)
         if (user) {
-            if (user.password === req.body.password) {
+            const hashPassword = md5(req.body.password);
+            if (user.password === hashPassword) {
                 const resData = {
                     "status": 200,
                     "massage": "Login successful!",
+                    "data": user
                 }
                 res.send(resData);
             } else {
@@ -55,10 +59,12 @@ module.exports.Login = async (req, res) => {
 
 module.exports.Register = async (req, res) => {
     try {
+        const hashPassword = md5(req.body.password);
         const user = new User({
             name: req.body.name,
             phone: req.body.phone,
-            password: req.body.password,
+            password: hashPassword,
+            urlAvatar:"https://chuoichin.com/wp-content/uploads/2019/01/avatar-den-13.jpg"
         })
         const saveUser = await user.save();
         const resData = {
