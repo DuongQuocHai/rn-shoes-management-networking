@@ -111,19 +111,20 @@ const App = () => {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" />
+                <Text>Hahaha</Text>
             </View>
         )
     }
     return (
         <AuthContext.Provider value={authContext}>
             <NavigationContainer>
-                {loginState.userToken !== null ? (
-                    <Drawer.Navigator drawerContent={props => <DrawerContent{...props} />}>
-                        <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-                        <Drawer.Screen name="HistoryScreen" component={HistoryScreen} />
-                    </Drawer.Navigator>
-                ) :
-                    <RootStackScreen />
+                {
+                    loginState.userToken !== null ? (
+                        <Drawer.Navigator drawerContent={props => <DrawerContent{...props} />}>
+                            <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
+                            <Drawer.Screen name="HistoryScreen" component={HistoryScreen} />
+                        </Drawer.Navigator>
+                    ) : <RootStackScreen />
                 }
             </NavigationContainer >
         </AuthContext.Provider>

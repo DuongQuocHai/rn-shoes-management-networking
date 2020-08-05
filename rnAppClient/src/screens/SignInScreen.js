@@ -6,7 +6,8 @@ import {
   TextInput,
   StatusBar,
   ImageBackground,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,7 +16,6 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import styles from '../themes/SignInSignUp/styles'
 import { AuthContext } from '../components/AuthContext'
-import Users from '../model/users';
 
 import { signInDb } from '../sever/users/sever'
 
@@ -28,6 +28,9 @@ const SignInScreen = ({ navigation }) => {
     isValidPhone: true,
     isValidPassword: true
   });
+
+  const [animating, setAnimating] = React.useState(false);
+
 
   const { signIn } = React.useContext(AuthContext)
   const updateSecureTextEntry = () => {
@@ -43,7 +46,7 @@ const SignInScreen = ({ navigation }) => {
         ...data,
         phone: val,
         check_textInputChange: true,
-        isValidPassword: true
+        isValidPhone: true
       })
     } else {
       setData({
@@ -57,98 +60,70 @@ const SignInScreen = ({ navigation }) => {
     setData({
       ...data,
       password: val,
+      isValidPassword: true
     });
     if (val === 6) {
       setData({
         ...data,
-        phone: val,
+        password: val,
         isValidPassword: false
       })
     }
   }
 
-  const checkValidForm = (phone, password) => {
-    console.log(phone)
-    console.log(password)
+  const checkValidPhone = (phone) => {
     if (phone.trim().length === 10) {
       setData({
         ...data,
-        isValidPhone: false
-      })
-      return true
-    } else if(phone.trim().length < 10){
-      setData({
-        ...data,
         isValidPhone: true
       })
-      return false
-    }else if(password.trim().length === 6){
+      return true
+    } else if (phone.trim().length < 10) {
       setData({
         ...data,
-        isValidPassword: false
+        isValidPhone: false
       })
-      return true
-    }else if(password.trim().length < 4){
+      return false
+    }
+  }
+  const checkValidPass = (password) => {
+    if (password.trim().length === 6) {
       setData({
         ...data,
         isValidPassword: true
       })
+      return true
+    } else if (password.trim().length < 6) {
+      setData({
+        ...data,
+        isValidPassword: false
+      })
       return false
     }
-    
   }
 
   const loginHandle = async (phone, password) => {
-    const user = await signInDb(phone, password);
-    if (data.phone.length == 0 || data.password.length == 0) {
-      Alert.alert('Wrong Input!', 'Username or password field cannot be empty.', [
-        { text: 'Okay' }
-      ]);
-      return;
-    }
-    if (val.trim().length === 10) {
-      setData({
-        ...data,
-        phone: val,
-        check_textInputChange: true,
-        isValidPhone: true
-      })
-      return;
-    } else {
-      setData({
-        ...data,
-        phone: val,
-        check_textInputChange: false,
-        isValidPhone: false
-      })
-      return;
-    }
-    if (val.trim().length === 6) {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: true
-      });
-    } else {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: false
-      });
-    }
-    if (foundUser.length == 0) {
-      Alert.alert('Invalid User!', 'Username or password is incorrect.', [
-        { text: 'Okay' }
-      ]);
-      return;
-    }
-    signIn(user);
+    if (checkValidPhone(phone) && checkValidPass(password)) {
+      setAnimating(true)
+      console.log('haha')
+      const user = await signInDb(phone, password);
+      console.log(user);
+      if(user) {
+        signIn(user);
+        setAnimating(false)
+      }else { 
+        setAnimating(false)
+        Alert.alert('Invalid User!', 'Username or password is incorrect.', [
+          { text: 'Okay' }
+        ]);
+      }
+    } else { console.log('huhu') }
   }
-
 
   return (
     <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
       <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
+      <ActivityIndicator animating={animating} size="large" color="#00ff00" />
       <Animatable.View animation="fadeIn" style={styles.header}>
         <Text style={styles.text_header}>
           Login
@@ -185,10 +160,11 @@ const SignInScreen = ({ navigation }) => {
               : null
           }
         </View>
-        {data.isValidPhone ? null :
-          <Animatable.View animation="fadeInLeft" >
-            <Text style={styles.errorMsg}>Phone must be 10 characters long</Text>
-          </Animatable.View>
+        {
+          data.isValidPhone ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Phone must be 10 characters long</Text>
+            </Animatable.View>
         }
         <Text style={[styles.text_footer, { marginTop: 35 }]}>Password</Text>
         <View style={styles.action}>
@@ -234,8 +210,8 @@ const SignInScreen = ({ navigation }) => {
         <View style={styles.button}>
           <TouchableOpacity disabled={false} style={styles.signIn}
             // onPress={() => { loginHandle(data.phone, data.password) }} 
-            onPress={() =>  checkValidForm(data.phone, data.password) } 
-            >
+            onPress={() => loginHandle(data.phone, data.password)}
+          >
             <LinearGradient colors={['#13C684', '#00C27F']} style={styles.signIn} >
               <Text style={[styles.textSign, { color: '#fff' }]}>
                 Sign In

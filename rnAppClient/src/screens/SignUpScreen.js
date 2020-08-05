@@ -21,10 +21,12 @@ const SignUpScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
     phone: '',
     password: '',
-    check_textInputChange: false,
-    check_txtPhoneChange: false,
     secureTextEntryPass: true,
     secureTextEntryConfirmPass: true,
+    check_txtNameChange: false,
+    check_txtPhoneChange: false,
+    isValidPhone: true,
+    isValidPassword: true,
   });
 
   const textInputChanged = (val) => {
@@ -89,6 +91,7 @@ const SignUpScreen = ({ navigation }) => {
             </Animatable.View>
             : null}
         </View>
+
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Phone</Text>
         <View style={styles.action}>
           <Feather
@@ -118,6 +121,12 @@ const SignUpScreen = ({ navigation }) => {
             </Animatable.View>
             : null}
         </View>
+        {
+          data.isValidPhone ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Password must be 10 characters long</Text>
+            </Animatable.View>
+        }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Password</Text>
         <View style={styles.action}>
           <Feather
@@ -149,6 +158,12 @@ const SignUpScreen = ({ navigation }) => {
             }
           </TouchableOpacity>
         </View>
+        {
+          data.isValidPassword ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Password must be 10 characters long</Text>
+            </Animatable.View>
+        }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Confirm Password</Text>
         <View style={styles.action}>
           <Feather
