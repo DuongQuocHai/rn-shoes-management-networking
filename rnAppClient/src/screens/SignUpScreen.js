@@ -20,11 +20,15 @@ import styles from '../themes/SignInSignUp/styles'
 import { AuthContext } from '../components/AuthContext'
 import { checkPhoneExist, signUpDb } from '../sever/users/sever'
 
+import AlertSuccessful from '../utils/alert/AlertSuccessful'
+import Loading from '../utils/loading/Loading'
+
 
 const SignUpScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
     name: '',
     phone: '',
+    errPhone: '',
     password: '',
     confirmPass: '',
     secureTextEntryPass: true,
@@ -34,7 +38,14 @@ const SignUpScreen = ({ navigation }) => {
     isValidName: true,
     isValidPhone: true,
     isValidPassword: true,
+    isValidConfirmPassword: true,
   });
+
+  const [alertSuccessful, setAlertSuccessful] = React.useState({
+    visible: false,
+    text: ''
+  });
+  const [loading, setLoading] = React.useState(false);
 
 
 
@@ -76,7 +87,7 @@ const SignUpScreen = ({ navigation }) => {
       ...data,
       password: val,
     })
-    if (val === 6) {
+    if (val.length === 6) {
       setData({
         ...data,
         password: val,
@@ -85,10 +96,12 @@ const SignUpScreen = ({ navigation }) => {
     }
   }
 
+
   const textInputConfirmPassChanged = (val) => {
     setData({
       ...data,
       confirmPass: val,
+      isValidConfirmPassword: true
     })
   }
 
@@ -107,7 +120,6 @@ const SignUpScreen = ({ navigation }) => {
   }
 
   const checkValidName = () => {
-    console.log(data.name.trim());
     if (data.name.trim() !== '') {
       setData({
         ...data,
@@ -133,7 +145,8 @@ const SignUpScreen = ({ navigation }) => {
     } else if (data.phone.trim().length < 10) {
       setData({
         ...data,
-        isValidPhone: false
+        isValidPhone: false,
+        errPhone: "Password must be 10 characters long"
       })
       return false
     }
@@ -158,35 +171,60 @@ const SignUpScreen = ({ navigation }) => {
     if (data.password.trim() === data.confirmPass.trim()) {
       return true
     } else {
-      alert('Password does not match')
+      setData({
+        ...data,
+        isValidConfirmPassword: false
+      })
+      // alert('Password does not match')
       return false
     }
   }
+
   const { signUp } = React.useContext(AuthContext)
+
   const handleResgister = async (user) => {
     if (checkValidName() && checkValidPhone() && checkValidPass() && checkConfirmPass()) {
+      setLoading(true)
       const resultPhoneExist = await checkPhoneExist(user.phone)
       if (resultPhoneExist.status === 200) {
         const resultSignUp = await signUpDb(user);
         console.log(resultSignUp);
         if (resultSignUp.status === 200) {
-          signUp(resultSignUp)
-        }else alert('Đăng ký thất bại')
+          setLoading(false)
+          setAlertSuccessful({
+            visible: true,
+            text: resultSignUp.message
+          })
+          setTimeout(() => {
+            signUp(resultSignUp)
+          }, 2000)
+        } else{
+          setLoading(false)
+          alert('Đăng ký thất bại')
+        } 
       } else {
-        alert(resultPhoneExist.message)
+        setLoading(false)
+        setData({
+          ...data,
+          isValidPhone: false,
+          errPhone: resultPhoneExist.message
+        })
       }
+    }else{ 
+      setLoading(false)
     }
   }
 
   return (
     <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
       <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
+      <AlertSuccessful visible={alertSuccessful.visible} text={alertSuccessful.text} />
+      <Loading flag={loading} />
       <Animatable.View animation="fadeIn" style={styles.header}>
         <Text style={styles.text_header}>
           Register
         </Text>
       </Animatable.View>
-
       <Animatable.View animation="slideInUp" style={styles.footer}>
         <Text style={styles.text_footer}>Full Name</Text>
         <View style={styles.action}>
@@ -254,7 +292,7 @@ const SignUpScreen = ({ navigation }) => {
         {
           data.isValidPhone ? null :
             <Animatable.View animation="fadeInLeft" >
-              <Text style={styles.errorMsg}>Phone must be 6 characters long</Text>
+              <Text style={styles.errorMsg}>{data.errPhone}</Text>
             </Animatable.View>
         }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Password</Text>
@@ -292,7 +330,7 @@ const SignUpScreen = ({ navigation }) => {
         {
           data.isValidPassword ? null :
             <Animatable.View animation="fadeInLeft" >
-              <Text style={styles.errorMsg}>Password must be 10 characters long</Text>
+              <Text style={styles.errorMsg}>Password must be 6 characters long</Text>
             </Animatable.View>
         }
         <Text style={[styles.text_footer, { marginTop: 20 }]}>Confirm Password</Text>
@@ -327,11 +365,16 @@ const SignUpScreen = ({ navigation }) => {
             }
           </TouchableOpacity>
         </View>
+        {
+          data.isValidConfirmPassword ? null :
+            <Animatable.View animation="fadeInLeft" >
+              <Text style={styles.errorMsg}>Password is not match</Text>
+            </Animatable.View>
+        }
         <View style={styles.button}>
           <TouchableOpacity
             onPress={() => handleResgister(data)}
             style={styles.signIn}>
-
             <LinearGradient
               colors={['#13C684', '#00C27F']}
               style={styles.signIn}

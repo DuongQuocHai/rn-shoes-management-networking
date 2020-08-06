@@ -1,5 +1,7 @@
 package com.rnasmnetworking;
 
+import android.view.Window;
+
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {

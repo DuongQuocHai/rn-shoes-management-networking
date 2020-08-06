@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Card, Modal, Text } from '@ui-kitten/components';
 
-import AlertNotification from '../utils/alert/AlertNotification'
+// import AlertNotification from '../utils/alert/AlertNotification'
 
 
 
@@ -11,7 +11,7 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Profile Screen</Text>
-      <AlertNotification />
+      {/* <AlertNotification /> */}
       
 
     </View>

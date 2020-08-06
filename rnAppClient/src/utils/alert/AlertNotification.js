@@ -1,42 +1,78 @@
-//src/Utils/UI/Alert/Alert.js
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Card, Modal, Text } from '@ui-kitten/components';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Button, Card, Modal } from '@ui-kitten/components';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import * as Animatable from 'react-native-animatable';
+import Spinner from "react-native-spinkit";
 
-export default () => {
 
-    const [visible, setVisible] = React.useState(false);
-
-    return (
-        <View style={styles.container}>
-
-            <Button onPress={() => setVisible(true)}>
-                TOGGLE MODAL
-      </Button>
-            <Modal
-                visible={visible}
-                backdropStyle={styles.backdrop}
-                onBackdropPress={() => setVisible(false)}>
-                <Card disabled={true} style={styles.container}>
-                    <Text>My awesome alert</Text>
-                    <Button onPress={() => setVisible(false)} style={styles.button}>
-                        DISMISS
-        </Button>
-                </Card>
-            </Modal>
-
-        </View>
-    );
-};
-
+export default class AlertNotification extends Component {
+    render() {
+        const { visible, status, text } = this.props;
+        return (
+            <View style={styles.container}>
+                <Modal
+                    visible={visible}
+                    backdropStyle={styles.backdrop}>
+                    <Card disabled={true} style={styles.container}>
+                        {(() => {
+                            if (status === 0) {
+                                return (
+                                    <View style={styles.content}>
+                                        <Animatable.View animation="zoomIn" >
+                                            <AntDesign
+                                                name="exclamationcircle"
+                                                color={'#e74c3c'}
+                                                size={30}
+                                            />
+                                        </Animatable.View>
+                                        <Text style={styles.text}>{text}</Text>
+                                    </View>
+                                )
+                            } if (status === 1) {
+                                return (
+                                    <View style={styles.content}>
+                                        <Animatable.View animation="zoomIn" >
+                                            <AntDesign
+                                                name="checkcircle"
+                                                color={'#00C27F'}
+                                                size={30}
+                                            />
+                                        </Animatable.View>
+                                        <Text style={styles.text}>{text}</Text>
+                                    </View>
+                                )
+                            } else
+                                return (
+                                    <View style={styles.content}>
+                                        <Spinner isVisible={true} size={30} type={'Bounce'} color={'#00C27F'} />
+                                        <Text style={styles.text}>Loading</Text>
+                                    </View>
+                                );
+                        })()}
+                    </Card>
+                </Modal>
+            </View>
+        );
+    }
+}
 const styles = StyleSheet.create({
     container: {
-        padding: 16
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        maxWidth: 300,
+        borderRadius: 10
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)'
     },
-    button: {
-        marginTop: 16
+    content: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    text: {
+        marginLeft: 20,
+        color: '#05375a',
+        fontSize: 18
     }
 });

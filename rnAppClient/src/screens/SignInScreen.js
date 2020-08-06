@@ -13,24 +13,33 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import Spinner from "react-native-spinkit";
+
 
 import styles from '../themes/SignInSignUp/styles'
 import { AuthContext } from '../components/AuthContext'
-
 import { signInDb } from '../sever/users/sever'
+
+import AlertSuccessful from '../utils/alert/AlertSuccessful'
+import Loading from '../utils/loading/Loading'
 
 const SignInScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
     phone: '',
     password: '',
+    errPhone: '',
+    errPassword: '',
     check_textInputChange: false,
     secureTextEntry: true,
     isValidPhone: true,
     isValidPassword: true
   });
 
-  const [animating, setAnimating] = React.useState(false);
-
+  const [alertSuccessful, setAlertSuccessful] = React.useState({
+    visible: false,
+    text: ''
+  });
+  const [loading, setLoading] = React.useState(false);
 
   const { signIn } = React.useContext(AuthContext)
   const updateSecureTextEntry = () => {
@@ -81,7 +90,8 @@ const SignInScreen = ({ navigation }) => {
     } else if (phone.trim().length < 10) {
       setData({
         ...data,
-        isValidPhone: false
+        isValidPhone: false,
+        errPhone: "Phone must be 10 characters long"
       })
       return false
     }
@@ -96,7 +106,8 @@ const SignInScreen = ({ navigation }) => {
     } else if (password.trim().length < 6) {
       setData({
         ...data,
-        isValidPassword: false
+        isValidPassword: false,
+        errPassword: "Password must be 6 characters long"
       })
       return false
     }
@@ -104,26 +115,43 @@ const SignInScreen = ({ navigation }) => {
 
   const handleLogin = async (phone, password) => {
     if (checkValidPhone(phone) && checkValidPass(password)) {
-      setAnimating(true)
-      console.log('haha')
+      setLoading(true);
       const user = await signInDb(phone, password);
-      console.log(user);
-      if(user) {
-        signIn(user);
-        setAnimating(false)
-      }else { 
-        setAnimating(false)
-        Alert.alert('Invalid User!', 'Username or password is incorrect.', [
-          { text: 'Okay' }
-        ]);
+      if (user.status === 200) {
+        setLoading(false);
+        setAlertSuccessful({
+          visible: true,
+          text: user.message
+        })
+        setTimeout(() => {
+          signIn(user);
+        }, 2000)
+      } else if (user.status === 502) {
+        setLoading(false);
+        setData({
+          ...data,
+          isValidPhone: false,
+          errPhone: user.message
+        })
+      } else if (user.status === 409) {
+        setLoading(false);
+        setData({
+          ...data,
+          isValidPassword: false,
+          errPassword: user.message
+        })
+      } else {
+        setLoading(false);
+        alert('Login failed!')
       }
-    } else { console.log('huhu') }
+    } else { setLoading(false); console.log('huhu') }
   }
 
   return (
     <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
       <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
-      <ActivityIndicator animating={animating} size="large" color="#00ff00" />
+      <AlertSuccessful visible={alertSuccessful.visible} text={alertSuccessful.text} />
+      <Loading flag={loading} />
       <Animatable.View animation="fadeIn" style={styles.header}>
         <Text style={styles.text_header}>
           Login
@@ -163,7 +191,7 @@ const SignInScreen = ({ navigation }) => {
         {
           data.isValidPhone ? null :
             <Animatable.View animation="fadeInLeft" >
-              <Text style={styles.errorMsg}>Phone must be 10 characters long</Text>
+              <Text style={styles.errorMsg}>{data.errPhone}</Text>
             </Animatable.View>
         }
         <Text style={[styles.text_footer, { marginTop: 35 }]}>Password</Text>
@@ -201,7 +229,7 @@ const SignInScreen = ({ navigation }) => {
         {
           data.isValidPassword ? null :
             <Animatable.View animation="fadeInLeft" >
-              <Text style={styles.errorMsg}>Password must be 6 characters long</Text>
+              <Text style={styles.errorMsg}>{data.errPassword}</Text>
             </Animatable.View>
         }
         <TouchableOpacity>

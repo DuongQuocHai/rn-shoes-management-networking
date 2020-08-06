@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, StatusBar } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 
@@ -12,6 +12,7 @@ const SplashScreen = ({ navigation }) => {
     });
     return (
         <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
+            {/* <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' /> */}
             <View
                 style={styles.warpperLogo} >
                 <Animatable.Image

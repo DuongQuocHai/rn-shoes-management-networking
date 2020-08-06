@@ -9,13 +9,13 @@ module.exports.CheckValidPhone = async (req, res) => {
         if (user) {
             const resData = {
                 "status": 502,
-                "message": "Số điện thoại đã được đăng kí",
+                "message": "Phone number has been registered",
             }
             res.send(resData);
         } else {
             const resData = {
                 "status": 200,
-                "message": "Số điện thoại không tồn tại",
+                "message": "Phone number does't exist",
 
             }
             res.send(resData);
@@ -35,21 +35,21 @@ module.exports.Login = async (req, res) => {
             if (user.password === hashPassword) {
                 const resData = {
                     "status": 200,
-                    "message": "Login successful!",
+                    "message": "Login successful",
                     "data": user
                 }
                 res.send(resData);
             } else {
                 const resData = {
                     "status": 409,
-                    "message": "Login Failed!",
+                    "message": "Wrong password!",
                 }
                 res.send(resData);
             }
         } else {
             const resData = {
                 "status": 502,
-                "message": "Số điện thoại không tồn tại",
+                "message": "Phone number isn's registered!",
             }
             res.send(resData);
         }

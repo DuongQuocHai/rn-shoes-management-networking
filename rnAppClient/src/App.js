@@ -8,13 +8,16 @@ import HistoryScreen from './screens/HistoryScreen'
 import {
     View,
     ActivityIndicator,
-    Text
+    Text,
+    StatusBar
 } from 'react-native';
 import * as eva from '@eva-design/eva';
 import AsyncStorage from '@react-native-community/async-storage';
+import Spinner from "react-native-spinkit";
+import * as Animatable from 'react-native-animatable';
 import RootStackScreen from './navigation/RootStackScreen'
 import { AuthContext } from './components/AuthContext'
-import { ApplicationProvider} from '@ui-kitten/components';
+import { ApplicationProvider } from '@ui-kitten/components';
 
 const Drawer = createDrawerNavigator();
 
@@ -113,9 +116,16 @@ const App = () => {
 
     if (loginState.isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" />
-                <Text>Hahaha</Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00C27F' }}>
+                <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' />
+                <Spinner isVisible={true} size={80} type={'9CubeGrid'} color={'white'} />
+                <Animatable.Text
+                    style={{
+                        fontSize: 15,
+                        color: 'white',
+                        marginTop: 20
+                    }}
+                    animation="zoomIn" duraton="1500">Waitings ...</Animatable.Text>
             </View>
         )
     }

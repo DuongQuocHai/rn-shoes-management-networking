@@ -188,6 +188,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     //////////////
     compile project(':react-native-vector-icons')
+    compile project(':react-native-spinkit')
     implementation project(':react-native-linear-gradient')
     implementation project(':@react-native-community_async-storage')
     /////////
