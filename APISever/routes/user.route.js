@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User.model');
-const userController = require('../../controllers/user.controller');
+const userController = require('../controllers/user.controller');
 
 router.post('/checkValidPhone', userController.CheckValidPhone);
 router.post('/login', userController.Login);
 router.post('/register', userController.Register);
+router.get('/', userController.Get);
 
 // router.patch('/:userId', async (req, res) => {
 //     try {
@@ -42,7 +42,7 @@ router.post('/register', userController.Register);
 //         const users = await User.find();
 //         const resData = {
 //             "status": 200,
-//             "massage": "Sucessfully!",
+//             "message": "Sucessfully!",
 //             "data": users
 //         }
 //         res.send(resData)
@@ -61,7 +61,7 @@ router.post('/register', userController.Register);
 //         const saveUser = await user.save();
 //         const resData = {
 //             "status": 200,
-//             "massage": "Register sucessfully!",
+//             "message": "Register sucessfully!",
 //             "data": saveUser
 //         }
 //         res.send(resData);
@@ -72,12 +72,12 @@ router.post('/register', userController.Register);
 //     //     console.log(data)
 //     //     const resData = {
 //     //         "status": 200,
-//     //         "massage": "create sucessfully!",
+//     //         "message": "create sucessfully!",
 //     //         "data": data
 //     //     }
 //     //     res.send(resData);
 //     // }).catch(err => {
-//     //     res.json({ massage: err })
+//     //     res.json({ message: err })
 //     // })
 // })
 

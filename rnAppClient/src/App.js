@@ -10,9 +10,11 @@ import {
     ActivityIndicator,
     Text
 } from 'react-native';
+import * as eva from '@eva-design/eva';
 import AsyncStorage from '@react-native-community/async-storage';
 import RootStackScreen from './navigation/RootStackScreen'
 import { AuthContext } from './components/AuthContext'
+import { ApplicationProvider} from '@ui-kitten/components';
 
 const Drawer = createDrawerNavigator();
 
@@ -119,16 +121,18 @@ const App = () => {
     }
     return (
         <AuthContext.Provider value={authContext}>
-            <NavigationContainer>
-                {
-                    loginState.userToken !== null ? (
-                        <Drawer.Navigator drawerContent={props => <DrawerContent{...props} />}>
-                            <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-                            <Drawer.Screen name="HistoryScreen" component={HistoryScreen} />
-                        </Drawer.Navigator>
-                    ) : <RootStackScreen />
-                }
-            </NavigationContainer >
+            <ApplicationProvider {...eva} theme={eva.light}>
+                <NavigationContainer>
+                    {
+                        loginState.userToken !== null ? (
+                            <Drawer.Navigator drawerContent={props => <DrawerContent{...props} />}>
+                                <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
+                                <Drawer.Screen name="HistoryScreen" component={HistoryScreen} />
+                            </Drawer.Navigator>
+                        ) : <RootStackScreen />
+                    }
+                </NavigationContainer >
+            </ApplicationProvider>
         </AuthContext.Provider>
     )
 }

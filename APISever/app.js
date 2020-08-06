@@ -8,13 +8,15 @@ app.use(bodyParser.json());
 
 const mongoose = require('mongoose');
 
-const usersRoute = require('./routes/users/user.route');
+const usersRoute = require('./routes/user.route');
+const shoesRoute = require('./routes/shoes.route');
 
 app.get('/', (req, res) => {
     res.send('We are on home')
 })
 
 app.use('/users', usersRoute);
+app.use('/shoes', shoesRoute);
 
 mongoose.connect(process.env.DB_CONNECTION, {useUnifiedTopology: true, useNewUrlParser: true},(err) => {
     if(err) {

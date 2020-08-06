@@ -8,14 +8,15 @@ module.exports.CheckValidPhone = async (req, res) => {
         console.log(user)
         if (user) {
             const resData = {
-                "status": 200,
-                "massage": "Số điện thoại tồn tại",
+                "status": 502,
+                "message": "Số điện thoại đã được đăng kí",
             }
             res.send(resData);
         } else {
             const resData = {
-                "status": 502,
-                "massage": "Số điện thoại không tồn tại",
+                "status": 200,
+                "message": "Số điện thoại không tồn tại",
+
             }
             res.send(resData);
         }
@@ -34,21 +35,21 @@ module.exports.Login = async (req, res) => {
             if (user.password === hashPassword) {
                 const resData = {
                     "status": 200,
-                    "massage": "Login successful!",
+                    "message": "Login successful!",
                     "data": user
                 }
                 res.send(resData);
             } else {
                 const resData = {
                     "status": 409,
-                    "massage": "Login Failed!",
+                    "message": "Login Failed!",
                 }
                 res.send(resData);
             }
         } else {
             const resData = {
                 "status": 502,
-                "massage": "Số điện thoại không tồn tại",
+                "message": "Số điện thoại không tồn tại",
             }
             res.send(resData);
         }
@@ -64,15 +65,28 @@ module.exports.Register = async (req, res) => {
             name: req.body.name,
             phone: req.body.phone,
             password: hashPassword,
-            urlAvatar:"https://chuoichin.com/wp-content/uploads/2019/01/avatar-den-13.jpg"
+            urlAvatar: "https://chuoichin.com/wp-content/uploads/2019/01/avatar-den-13.jpg"
         })
         const saveUser = await user.save();
         const resData = {
             "status": 200,
-            "massage": "Register sucessfully!",
+            "message": "Register sucessfully!",
             "data": saveUser
         }
         res.send(resData);
+    } catch (err) {
+        res.json({ message: err })
+    }
+}
+module.exports.Get = async (req, res) => {
+    try {
+        const users = await User.find();
+        const resData = {
+            "status": 200,
+            "message": "Sucessfully!",
+            "data": users
+        }
+        res.send(resData)
     } catch (err) {
         res.json({ message: err })
     }
