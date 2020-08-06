@@ -64,13 +64,21 @@ module.exports.Update = (req, res) => {
 
 module.exports.Delete = async (req, res) => {
     try {
-        const removeShoe = await Shoe.remove({ _id: req.params.shoeId });
-        if(removeShoe){
-            res.send('Haha');
-        }else{
-            res.send('Huhu');
-        }
-        // res.json(removeShoe);
+        Shoe.remove({ _id: req.params.shoeId }, (err, data) => {
+            if (!err) {
+                const resData = {
+                    "status": 200,
+                    "message": "Delete sucessfully!",
+                }
+                res.send(resData);
+            } else {
+                const resData = {
+                    "status": 409,
+                    "message": "Delete Failed!",
+                }
+                res.send(resData)
+            }
+        });
     } catch (err) {
         res.json({ message: err })
     }
