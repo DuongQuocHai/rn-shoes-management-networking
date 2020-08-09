@@ -13,7 +13,7 @@ const SearchScreen = ({ navigation }) => {
   const pressSearch = async (text) => {
     setIsLoading(true);
     const res = await searchShoes(text);
-    if (res) {
+    if (res && text.trim().length !== 0 ) {
       setIsLoading(false);
       setTotalResults(res.message);
       setListSearch(res.data);
