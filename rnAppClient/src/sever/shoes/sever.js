@@ -1,12 +1,12 @@
 import { PORT } from '../port'
 import axios from 'axios'
 
-const API_GETSHOES = `http://${PORT}:4000/shoes`
-const API_ADDSHOES = `http://${PORT}:4000/shoes/add`
-const API_SEARCHSHOES = `http://${PORT}:4000/shoes/search/`
-const API_DETAILSHOES = `http://${PORT}:4000/shoes/`
-const API_UPDATESHOE = `http://${PORT}:4000/shoes/update/`
-const API_DELETESHOE = `http://${PORT}:4000/shoes/delete/`
+const API_GETSHOES = `http://${PORT}/shoes`
+const API_ADDSHOES = `http://${PORT}/shoes/add`
+const API_SEARCHSHOES = `http://${PORT}/shoes/search/`
+const API_DETAILSHOES = `http://${PORT}/shoes/`
+const API_UPDATESHOE = `http://${PORT}/shoes/update/`
+const API_DELETESHOE = `http://${PORT}/shoes/delete/`
 
 // const RANDOM_IMAGE = 'https://api.unsplash.com/users/:username/likes/?client_id=DY70YHkz6hFn1yAebVvq_9OfANkVWEzDC9wEGZCl0d0'
 const RANDOM_IMAGE = 'https://api.unsplash.com/users/quochaiduong73/likes/?client_id=DY70YHkz6hFn1yAebVvq_9OfANkVWEzDC9wEGZCl0d0'

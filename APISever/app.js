@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 require('dotenv/config');
-const port = 4000;
+const port = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
@@ -18,13 +18,13 @@ app.get('/', (req, res) => {
 app.use('/users', usersRoute);
 app.use('/shoes', shoesRoute);
 
-mongoose.connect(process.env.DB_CONNECTION, {useUnifiedTopology: true, useNewUrlParser: true},(err) => {
-    if(err) {
+mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUrlParser: true }, (err) => {
+    if (err) {
         console.log('Can not connect to mongodb, because', err);
-    } else{
+    } else {
         console.log('Connect to mongodb successful');
     }
-    })
+})
 
 app.listen(port, () => {
     console.log('server listening on port', port);

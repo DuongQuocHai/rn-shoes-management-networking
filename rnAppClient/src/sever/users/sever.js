@@ -1,9 +1,9 @@
 import { PORT } from '../port'
 import axios from 'axios'
 
-const API_SignIn = `http://${PORT}:4000/users/login`
-const API_SignUp = `http://${PORT}:4000/users/register`
-const API_CheckPhoneExist = `http://${PORT}:4000/users/checkValidPhone`
+const API_SignIn = `http://${PORT}/users/login`
+const API_SignUp = `http://${PORT}/users/register`
+const API_CheckPhoneExist = `http://${PORT}/users/checkValidPhone`
 
 export const validatePhoneNumber = (phone) => {
     var regexp = /^(03|07|08|09|01[2|6|8|9])+([0-9]{8})$/
