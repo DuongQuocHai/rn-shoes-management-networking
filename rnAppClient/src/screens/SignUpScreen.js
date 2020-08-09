@@ -193,11 +193,11 @@ const SignUpScreen = ({ navigation }) => {
           setLoading(false)
           setAlertSuccessful({
             visible: true,
-            text: resultSignUp.message
+            text: user.message
           })
           setTimeout(() => {
-            signUp(resultSignUp)
           }, 2000)
+          signUp(resultSignUp)
         } else{
           setLoading(false)
           alert('Đăng ký thất bại')

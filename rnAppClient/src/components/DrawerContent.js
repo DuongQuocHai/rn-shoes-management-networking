@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
     useTheme,
@@ -13,34 +13,57 @@ import {
 } from 'react-native-paper';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {AuthContext} from './AuthContext';
+import AsyncStorage from '@react-native-community/async-storage';
+
+import { AuthContext } from './AuthContext';
 
 
 export function DrawerContent(props) {
     const [isDarkTheme, setIsDarkTheme] = React.useState(false);
-    const toggleTheme = () => { 
+    // const [data, setData] = React.useState({
+    //     name: '',
+    //     url: null,
+    //     phone: ''
+    // });
+    const [data, setData] = React.useState({});
+    const toggleTheme = () => {
         setIsDarkTheme(!isDarkTheme)
     }
 
-    const {signOut} = React.useContext(AuthContext);
+    const getUser = async () => {
+        const stringDataUser = await AsyncStorage.getItem('dataUser');
+        const jsonDataUser = JSON.parse(stringDataUser)
+        console.log(jsonDataUser.data)
+        // return setData({
+        //     // ...data,
+        //     name: jsonDataUser.data.name,
+        //     url: jsonDataUser.data.urlAvatar,
+        //     phone: jsonDataUser.data.phone
+        // })
+        return setData(jsonDataUser.data)
+    }
+    useEffect(() => {
+        getUser()
+    }, []);
+
+
+    const { signOut } = React.useContext(AuthContext);
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: "#78e08f" }}>
             <DrawerContentScrollView {...props}>
                 <View style={styles.drawerContent}>
                     <View style={styles.userInfoSection}>
                         <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center' }}>
                             <Avatar.Image
-                                source={{
-                                    uri: 'https://vnn-imgs-f.vgcloud.vn/2020/03/23/11/trend-avatar-6.jpg'
-                                }}
+                                source={{ uri: data.urlAvatar }}
                                 size={50}
                             />
                             <View style={{ marginLeft: 15, flexDirection: 'column' }}>
-                                <Title style={styles.title}>John Doe</Title>
-                                <Caption style={styles.caption}>@j_doe</Caption>
+                                <Title style={styles.title}>{data.name}</Title>
+                                <Caption style={styles.caption}>{data.phone}</Caption>
                             </View>
                         </View>
-                        <View style={styles.row}>
+                        {/* <View style={styles.row}>
                             <View style={styles.section}>
                                 <Paragraph style={[styles.paragraph, styles.caption]}>80</Paragraph>
                                 <Caption style={styles.caption}>Following</Caption>
@@ -49,7 +72,7 @@ export function DrawerContent(props) {
                                 <Paragraph style={[styles.paragraph, styles.caption]}>100</Paragraph>
                                 <Caption style={styles.caption}>Followers</Caption>
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                     <Drawer.Section style={styles.drawerSection}>
                         <DrawerItem
@@ -61,7 +84,7 @@ export function DrawerContent(props) {
                                 />
                             )}
                             label="Home"
-                        onPress={() => { props.navigation.navigate('HomeDrawer') }}
+                            onPress={() => { props.navigation.navigate('HomeDrawer') }}
                         />
                         <DrawerItem
                             icon={({ color, size }) => (
@@ -87,11 +110,11 @@ export function DrawerContent(props) {
                         />
                     </Drawer.Section>
                     <Drawer.Section title="Preferences">
-                        <TouchableRipple onPress={() => {toggleTheme()}}>
+                        <TouchableRipple onPress={() => { toggleTheme() }}>
                             <View style={styles.preference}>
                                 <Text>Dark Theme</Text>
                                 <View pointerEvents="none">
-                                    <Switch value={isDarkTheme}/>
+                                    <Switch value={isDarkTheme} />
                                 </View>
                             </View>
                         </TouchableRipple>
@@ -108,7 +131,7 @@ export function DrawerContent(props) {
                         />
                     )}
                     label="Sign Out"
-                onPress={() => { signOut() }}
+                    onPress={() => { signOut() }}
                 />
             </Drawer.Section>
         </View>
@@ -126,6 +149,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 3,
         fontWeight: 'bold',
+
     },
     caption: {
         fontSize: 14,

@@ -2,22 +2,24 @@ import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native'
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import MainTabScreen from './navigation/MainTabScreen'
-import { DrawerContent } from './components/DrawerContent'
-import HistoryScreen from './screens/HistoryScreen'
+import { ApplicationProvider } from '@ui-kitten/components';
 import {
     View,
-    ActivityIndicator,
-    Text,
     StatusBar
 } from 'react-native';
 import * as eva from '@eva-design/eva';
 import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from "react-native-spinkit";
 import * as Animatable from 'react-native-animatable';
+
 import RootStackScreen from './navigation/RootStackScreen'
 import { AuthContext } from './components/AuthContext'
-import { ApplicationProvider } from '@ui-kitten/components';
+import { DrawerContent } from './components/DrawerContent'
+import MainTabScreen from './navigation/MainTabScreen'
+import HistoryScreen from './screens/HistoryScreen'
+import DetailsStackScreen from './navigation/stacknavigation/DetailsStack'
+import CreateShoeStackScreen from './navigation/stacknavigation/CreateShoeStack'
+import UpdateShoeStackScreen from './navigation/stacknavigation/UpdateShoeStack'
 
 const Drawer = createDrawerNavigator();
 
@@ -103,7 +105,6 @@ const App = () => {
             try {
                 const stringDataUser = await AsyncStorage.getItem('dataUser');
                 const jsonDataUser = JSON.parse(stringDataUser)
-                console.log('++++++', jsonDataUser);
                 if (jsonDataUser !== null) {
                     userToken = jsonDataUser._id
                 }
@@ -138,6 +139,9 @@ const App = () => {
                             <Drawer.Navigator drawerContent={props => <DrawerContent{...props} />}>
                                 <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
                                 <Drawer.Screen name="HistoryScreen" component={HistoryScreen} />
+                                <Drawer.Screen name="DetailsStack" component={DetailsStackScreen} />
+                                <Drawer.Screen name="CreateShoeStack" component={CreateShoeStackScreen} />
+                                <Drawer.Screen name="UpdateShoeStack" component={UpdateShoeStackScreen} />
                             </Drawer.Navigator>
                         ) : <RootStackScreen />
                     }

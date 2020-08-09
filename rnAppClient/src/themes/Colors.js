@@ -1,0 +1,1 @@
+export default MAIN_COLORS = '#00C27F'

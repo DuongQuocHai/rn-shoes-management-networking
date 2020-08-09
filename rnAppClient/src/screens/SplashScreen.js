@@ -9,7 +9,7 @@ const SplashScreen = ({ navigation }) => {
         setTimeout(() => {
             navigation.replace('SignInScreen');
         }, 3000)
-    });
+    },[]);
     return (
         <ImageBackground source={require('../assets/images/bg.png')} style={styles.container}>
             {/* <StatusBar backgroundColor={'#00C27F'} barStyle='light-content' /> */}
