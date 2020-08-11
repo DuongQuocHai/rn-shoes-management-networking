@@ -9,7 +9,7 @@ const API_UPDATESHOE = `http://${PORT}/shoes/update/`
 const API_DELETESHOE = `http://${PORT}/shoes/delete/`
 
 // const RANDOM_IMAGE = 'https://api.unsplash.com/users/:username/likes/?client_id=DY70YHkz6hFn1yAebVvq_9OfANkVWEzDC9wEGZCl0d0'
-const RANDOM_IMAGE = 'https://api.unsplash.com/users/quochaiduong73/likes/?client_id=DY70YHkz6hFn1yAebVvq_9OfANkVWEzDC9wEGZCl0d0'
+const RANDOM_IMAGE = 'https://api.unsplash.com/users/quochaiduong73/likes/?client_id=DY70YHkz6hFn1yAebVvq_9OfANkVWEzDC9wEGZCl0d0&per_page=100'
 
 
 import SHOP_INFO from '../../model/ShopInfo'
@@ -105,8 +105,11 @@ export const randomIamge = async () => {
     try {
         const res = await axios.get(RANDOM_IMAGE);
         if (res) {
-            const iRandom = Math.floor(Math.random() * res.data.length + 1);
+            console.log(res.data.length)
+            const iRandom = Math.floor(Math.random() * res.data.length);
+            console.log(iRandom)
             const image = res.data[iRandom];
+            console.log(image.urls.full);
             return image
         } else return false
     } catch (error) {

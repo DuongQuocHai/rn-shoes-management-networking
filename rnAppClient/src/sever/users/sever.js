@@ -32,7 +32,7 @@ export const signUpDb = async (user) => {
             "name": user.name,
             "phone": user.phone,
             "password": user.password,
-            "urlAvatar": "https://chuoichin.com/wp-content/uploads/2019/01/avatar-den-13.jpg"
+            "urlAvatar": "https://1.bp.blogspot.com/-rt6mn1dJJ7M/XqZl2p-TboI/AAAAAAAAjO8/SzKdmwQAFhUH2CXgUH6kluj_G8Gig2-xgCLcBGAsYHQ/s1600/Anh-avatar-dep-cho-con-trai%2B%25281%2529.jpg"
         })
         if (res.data.status === 200) {
             return res.data

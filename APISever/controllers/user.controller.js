@@ -65,7 +65,7 @@ module.exports.Register = async (req, res) => {
             name: req.body.name,
             phone: req.body.phone,
             password: hashPassword,
-            urlAvatar: "https://chuoichin.com/wp-content/uploads/2019/01/avatar-den-13.jpg"
+            urlAvatar: req.body.urlAvatar
         })
         const saveUser = await user.save();
         const resData = {
